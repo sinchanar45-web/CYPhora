@@ -1,0 +1,15 @@
+config system global
+    set hostname "CYPhora-FortiGate"
+end
+
+config system ntp
+    set status enable
+end
+
+config log setting
+    set status enable
+end
+
+config system accprofile
+    set admintimeout 10
+end

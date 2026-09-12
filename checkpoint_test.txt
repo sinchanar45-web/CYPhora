@@ -1,0 +1,11 @@
+# Check Point Gaia Demo Configuration
+
+set hostname CHECKPOINT-GW1
+
+set clienv cli-prompt "%M% "
+
+set syslog status enabled
+
+set ntp active on
+
+ssh enabled

@@ -1,0 +1,21 @@
+! Arista EOS - Improved Demo Configuration
+
+hostname ARISTA-SW1
+
+!
+! Secure management access
+!
+management ssh
+   no shutdown
+
+no management api http-commands
+
+!
+! Logging
+!
+logging buffered 10000
+
+!
+! NTP
+!
+ntp server 10.10.10.10

@@ -1,0 +1,7 @@
+! Arista EOS - Insecure Demo Configuration
+
+hostname ARISTA-TEST
+
+interface Ethernet1
+   description Uplink
+   shutdown

@@ -1,0 +1,21 @@
+!
+hostname CYPhora-Test-Router
+!
+interface GigabitEthernet0/0
+ description Internal Network
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown
+!
+ip ssh version 2
+!
+line vty 0 4
+ transport input ssh
+!
+service timestamps log datetime
+logging buffered 16384
+!
+ntp server 192.168.1.100
+!
+no ip http server
+!
+end
