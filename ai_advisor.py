@@ -1,5 +1,4 @@
 import os
-import time
 
 from google import genai
 
@@ -9,10 +8,7 @@ except Exception:
     st = None
 
 
-# ============================================================
-# GET GEMINI API KEY
-# ============================================================
-
+# Get Gemini API key
 api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key and st is not None:
@@ -22,30 +18,17 @@ if not api_key and st is not None:
         api_key = None
 
 
-# ============================================================
-# CREATE GEMINI CLIENT
-# ============================================================
-
+# Create Gemini client only when a key is available
 client = genai.Client(api_key=api_key) if api_key else None
 
 
-# ============================================================
-# AI RECOMMENDATION FUNCTION
-# ============================================================
-
 def get_ai_recommendation(vendor, findings):
 
-    # --------------------------------------------------------
-    # API KEY NOT AVAILABLE
-    # --------------------------------------------------------
-
     if client is None:
-        return ""
-
-
-    # --------------------------------------------------------
-    # AI PROMPT
-    # --------------------------------------------------------
+        return (
+            "AI recommendation is unavailable because the "
+            "GEMINI_API_KEY is not configured."
+        )
 
     prompt = f"""
 You are CYPhora, an AI-driven network security compliance assistant.
@@ -77,77 +60,13 @@ IMPORTANT RULES:
 - Format the response using clear headings and bullet points.
 """
 
+    try:
+        response = client.models.generate_content(
+            model="gemini-3.6-flash",
+            contents=prompt
+        )
 
-    # --------------------------------------------------------
-    # TRY GEMINI
-    # --------------------------------------------------------
+        return response.text
 
-    for attempt in range(3):
-
-        try:
-
-            response = client.models.generate_content(
-                model="gemini-3.6-flash",
-                contents=prompt
-            )
-
-
-            # ------------------------------------------------
-            # SUCCESS
-            # ------------------------------------------------
-
-            if response and response.text:
-                return response.text
-
-            return ""
-
-
-        except Exception as e:
-
-            error_message = str(e)
-
-
-            # ------------------------------------------------
-            # GEMINI QUOTA EXCEEDED / RATE LIMIT
-            # 429 RESOURCE_EXHAUSTED
-            # ------------------------------------------------
-
-            if (
-                "429" in error_message
-                or "RESOURCE_EXHAUSTED" in error_message
-                or "quota" in error_message.lower()
-                or "rate limit" in error_message.lower()
-            ):
-
-                # Retry once after a short delay.
-                # If quota is exhausted, the fallback in app.py
-                # will automatically be displayed.
-                if attempt < 2:
-                    time.sleep(3)
-                    continue
-
-                return ""
-
-
-            # ------------------------------------------------
-            # GEMINI TEMPORARILY UNAVAILABLE
-            # 503
-            # ------------------------------------------------
-
-            if (
-                "503" in error_message
-                or "UNAVAILABLE" in error_message
-            ):
-
-                if attempt < 2:
-                    time.sleep(3)
-                    continue
-
-                return ""
-
-
-            # ------------------------------------------------
-            # OTHER ERRORS
-            # ------------------------------------------------
-
-            return ""
+    except Exception as e:
+        return f"AI recommendation could not be generated: {str(e)}"
