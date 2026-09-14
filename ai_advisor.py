@@ -9,7 +9,10 @@ except Exception:
     st = None
 
 
-# Get Gemini API key
+# ============================================================
+# GET GEMINI API KEY
+# ============================================================
+
 api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key and st is not None:
@@ -19,17 +22,33 @@ if not api_key and st is not None:
         api_key = None
 
 
-# Create Gemini client only when a key is available
+# ============================================================
+# CREATE GEMINI CLIENT
+# ============================================================
+
 client = genai.Client(api_key=api_key) if api_key else None
 
 
+# ============================================================
+# AI RECOMMENDATION FUNCTION
+# ============================================================
+
 def get_ai_recommendation(vendor, findings):
+
+    # --------------------------------------------------------
+    # API KEY NOT AVAILABLE
+    # --------------------------------------------------------
 
     if client is None:
         return (
             "⚠️ AI recommendation is unavailable because the "
             "GEMINI_API_KEY is not configured."
         )
+
+
+    # --------------------------------------------------------
+    # AI PROMPT
+    # --------------------------------------------------------
 
     prompt = f"""
 You are CYPhora, an AI-driven network security compliance assistant.
@@ -61,38 +80,57 @@ IMPORTANT RULES:
 - Format the response using clear headings and bullet points.
 """
 
-    # Try Gemini up to 3 times if the service is temporarily unavailable
+
+    # --------------------------------------------------------
+    # TRY GEMINI UP TO 3 TIMES
+    # --------------------------------------------------------
+
     for attempt in range(3):
 
         try:
+
             response = client.models.generate_content(
                 model="gemini-3.6-flash",
                 contents=prompt
             )
 
+
+            # ------------------------------------------------
+            # SUCCESSFUL RESPONSE
+            # ------------------------------------------------
+
             if response and response.text:
                 return response.text
 
-            return "⚠️ Gemini returned an empty response."
+
+            # Empty response
+            return ""
+
 
         except Exception as e:
 
             error_message = str(e)
 
-            # Retry temporary 503/high-demand errors
+
+            # ------------------------------------------------
+            # GEMINI TEMPORARILY UNAVAILABLE / 503
+            # ------------------------------------------------
+
             if "503" in error_message or "UNAVAILABLE" in error_message:
 
+                # Retry twice
                 if attempt < 2:
                     time.sleep(3)
                     continue
 
-                return (
-                    "⚠️ CYPhora AI is temporarily unavailable because "
-                    "the Gemini service is experiencing high demand. "
-                    "Please try the audit again in a few moments."
-                )
+                # Return empty so app.py uses fallback
+                return ""
 
-            # Other errors should be shown normally
+
+            # ------------------------------------------------
+            # OTHER GEMINI ERRORS
+            # ------------------------------------------------
+
             return (
                 f"⚠️ AI recommendation could not be generated: "
                 f"{error_message}"

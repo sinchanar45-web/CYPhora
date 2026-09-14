@@ -1098,6 +1098,7 @@ with tab2:
                 st.write("")
 
                 # -------------------------------------------------
+                # -------------------------------------------------
                 # AI SECURITY ANALYSIS
                 # -------------------------------------------------
 
@@ -1126,6 +1127,10 @@ with tab2:
                             f"{result.get('message', '')}\n"
                         )
 
+                    # -------------------------------------------------
+                    # TRY GEMINI AI
+                    # -------------------------------------------------
+
                     with st.spinner(
                         "🤖 CYPhora AI is analyzing the findings..."
                     ):
@@ -1137,7 +1142,97 @@ with tab2:
                                 findings_text
                             )
 
-                            st.session_state.ai_result = ai_result
+                            if ai_result and str(ai_result).strip():
+
+                                st.session_state.ai_result = ai_result
+
+                                st.markdown(
+                                    '<div class="ai-card">',
+                                    unsafe_allow_html=True
+                                )
+
+                                st.markdown(
+                                    "### 🧠 CYPhora AI Recommendations"
+                                )
+
+                                st.markdown(
+                                    ai_result
+                                )
+
+                                st.markdown(
+                                    "</div>",
+                                    unsafe_allow_html=True
+                                )
+
+                                st.success(
+                                    "✅ AI-assisted security recommendations generated successfully."
+                                )
+
+                            else:
+                                raise Exception(
+                                    "Gemini returned an empty response."
+                                )
+
+                        # -------------------------------------------------
+                        # GEMINI UNAVAILABLE → FALLBACK
+                        # -------------------------------------------------
+
+                        except Exception:
+
+                            fallback_recommendations = []
+
+                            for result in failed_results:
+
+                                check_name = result.get(
+                                    "check",
+                                    "Security Check"
+                                )
+
+                                severity = result.get(
+                                    "severity",
+                                    "MEDIUM"
+                                )
+
+                                message = result.get(
+                                    "message",
+                                    ""
+                                )
+
+                                recommendation = (
+                                    f"**{check_name}** "
+                                    f"({severity} severity): "
+                                    f"Review and remediate this configuration issue. "
+                                    f"{message}"
+                                )
+
+                                fallback_recommendations.append(
+                                    recommendation
+                                )
+
+                            fallback_text = (
+                                "### 🛡️ CYPhora Security Recommendations\n\n"
+                                "The AI service is temporarily unavailable, "
+                                "so CYPhora has generated recommendations "
+                                "from the detected compliance findings.\n\n"
+                            )
+
+                            for index, recommendation in enumerate(
+                                fallback_recommendations,
+                                start=1
+                            ):
+
+                                fallback_text += (
+                                    f"**{index}.** {recommendation}\n\n"
+                                )
+
+                            fallback_text += (
+                                "---\n\n"
+                                "💡 **Recommendation:** "
+                                "Remediate the failed security controls "
+                                "and run the audit again to verify improvement."
+                            )
+
+                            st.session_state.ai_result = fallback_text
 
                             st.markdown(
                                 '<div class="ai-card">',
@@ -1145,11 +1240,7 @@ with tab2:
                             )
 
                             st.markdown(
-                                "### 🧠 CYPhora AI Recommendations"
-                            )
-
-                            st.markdown(
-                                ai_result
+                                fallback_text
                             )
 
                             st.markdown(
@@ -1157,17 +1248,18 @@ with tab2:
                                 unsafe_allow_html=True
                             )
 
-                        except Exception as e:
-
-                            st.error(
-                                "❌ AI analysis could not be generated."
-                            )
-
-                            st.caption(
-                                f"Technical information: {e}"
+                            st.info(
+                                "ℹ️ AI service is temporarily unavailable. "
+                                "CYPhora displayed fallback recommendations "
+                                "based on the detected security findings."
                             )
 
                 else:
+
+                    st.session_state.ai_result = (
+                        "🤖 **All security checks passed.** "
+                        "No remediation analysis is required."
+                    )
 
                     st.success(
                         "🤖 All checks passed. "
