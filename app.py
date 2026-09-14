@@ -360,10 +360,6 @@ tab1, tab2, tab3 = st.tabs(
 
 with tab1:
 
-    # -----------------------------------------------------
-    # HERO
-    # -----------------------------------------------------
-
     st.markdown(
         """
         <div class="dashboard-hero">
@@ -389,10 +385,6 @@ with tab1:
         '</div>',
         unsafe_allow_html=True
     )
-
-    # -----------------------------------------------------
-    # LATEST AUDIT
-    # -----------------------------------------------------
 
     latest_report = st.session_state.audit_report
 
@@ -501,10 +493,6 @@ with tab1:
 
     st.write("")
 
-    # -----------------------------------------------------
-    # PLATFORM OVERVIEW
-    # -----------------------------------------------------
-
     st.markdown("#### 📊 Platform Overview")
 
     p1, p2, p3, p4 = st.columns(4)
@@ -534,10 +522,6 @@ with tab1:
 
     st.write("")
 
-    # -----------------------------------------------------
-    # HOW CYPhora WORKS
-    # -----------------------------------------------------
-
     st.markdown("#### ⚙️ How CYPhora Works")
 
     workflow = [
@@ -564,10 +548,6 @@ with tab1:
             )
 
     st.write("")
-
-    # -----------------------------------------------------
-    # SUPPORTED VENDORS
-    # -----------------------------------------------------
 
     st.markdown("#### 🌐 Supported Network Vendors")
 
@@ -605,10 +585,6 @@ with tab1:
 
         st.write("")
 
-    # -----------------------------------------------------
-    # COMPLIANCE FRAMEWORKS
-    # -----------------------------------------------------
-
     st.markdown("#### 📋 Compliance Framework Alignment")
 
     frameworks = [
@@ -635,10 +611,6 @@ with tab1:
             )
 
     st.write("")
-
-    # -----------------------------------------------------
-    # ARCHITECTURE
-    # -----------------------------------------------------
 
     with st.expander("🧠 View CYPhora Architecture"):
 
@@ -697,10 +669,6 @@ with tab2:
     )
 
     st.write("")
-
-    # -----------------------------------------------------
-    # UPLOAD AREA
-    # -----------------------------------------------------
 
     st.subheader("📁 Configuration Upload")
 
@@ -767,10 +735,6 @@ with tab2:
             )
 
             st.stop()
-
-        # -------------------------------------------------
-        # VENDOR DETECTION
-        # -------------------------------------------------
 
         st.subheader("🔎 Vendor Detection")
 
@@ -1126,16 +1090,35 @@ with tab2:
                             f"{result.get('message', '')}\n"
                         )
 
+                    # =================================================
+                    # ORIGINAL GEMINI AI + AUTOMATIC FALLBACK
+                    # =================================================
+
                     with st.spinner(
                         "🤖 CYPhora AI is analyzing the findings..."
                     ):
 
                         try:
 
+                            # -------------------------------------------------
+                            # TRY ORIGINAL GEMINI AI
+                            # -------------------------------------------------
+
                             ai_result = get_ai_recommendation(
                                 vendor,
                                 findings_text
                             )
+
+                            # Check that Gemini actually returned text
+                            if not ai_result or not str(ai_result).strip():
+
+                                raise Exception(
+                                    "AI returned an empty response."
+                                )
+
+                            # -------------------------------------------------
+                            # GEMINI SUCCESS
+                            # -------------------------------------------------
 
                             st.session_state.ai_result = ai_result
 
@@ -1157,17 +1140,111 @@ with tab2:
                                 unsafe_allow_html=True
                             )
 
-                        except Exception as e:
-
-                            st.error(
-                                "❌ AI analysis could not be generated."
+                            st.success(
+                                "✅ AI-assisted security recommendations generated successfully."
                             )
 
-                            st.caption(
-                                f"Technical information: {e}"
+                        except Exception:
+
+                            # =================================================
+                            # GEMINI FAILED
+                            # AUTOMATIC CYPhora FALLBACK
+                            # =================================================
+
+                            fallback_recommendations = []
+
+                            for result in failed_results:
+
+                                check_name = result.get(
+                                    "check",
+                                    "Security Check"
+                                )
+
+                                severity = result.get(
+                                    "severity",
+                                    "MEDIUM"
+                                )
+
+                                message = result.get(
+                                    "message",
+                                    ""
+                                )
+
+                                recommendation = (
+                                    f"**{check_name}** "
+                                    f"({severity} severity): "
+                                    f"Review and remediate this configuration issue. "
+                                    f"{message}"
+                                )
+
+                                fallback_recommendations.append(
+                                    recommendation
+                                )
+
+                            # -------------------------------------------------
+                            # CREATE FALLBACK MESSAGE
+                            # -------------------------------------------------
+
+                            fallback_text = (
+                                "### 🧠 CYPhora AI Recommendations\n\n"
+                                "The AI service is temporarily unavailable, "
+                                "so CYPhora has generated recommendations "
+                                "from the detected compliance findings.\n\n"
+                            )
+
+                            for index, recommendation in enumerate(
+                                fallback_recommendations,
+                                start=1
+                            ):
+
+                                fallback_text += (
+                                    f"**{index}.** {recommendation}\n\n"
+                                )
+
+                            fallback_text += (
+                                "---\n\n"
+                                "💡 **Recommendation:** "
+                                "Remediate the failed security controls "
+                                "and run the audit again to verify improvement."
+                            )
+
+                            # -------------------------------------------------
+                            # SAVE FALLBACK
+                            # This makes it appear in Reports and PDF too.
+                            # -------------------------------------------------
+
+                            st.session_state.ai_result = fallback_text
+
+                            # -------------------------------------------------
+                            # DISPLAY FALLBACK
+                            # -------------------------------------------------
+
+                            st.markdown(
+                                '<div class="ai-card">',
+                                unsafe_allow_html=True
+                            )
+
+                            st.markdown(
+                                fallback_text
+                            )
+
+                            st.markdown(
+                                "</div>",
+                                unsafe_allow_html=True
+                            )
+
+                            st.info(
+                                "ℹ️ AI service is temporarily unavailable. "
+                                "CYPhora displayed fallback recommendations "
+                                "based on the detected security findings."
                             )
 
                 else:
+
+                    st.session_state.ai_result = (
+                        "🤖 **All security checks passed.** "
+                        "No remediation analysis is required."
+                    )
 
                     st.success(
                         "🤖 All checks passed. "
@@ -1337,6 +1414,7 @@ with tab3:
         if before_file is not None and after_file is not None:
 
             try:
+
                 before_text = before_file.read().decode("utf-8")
                 after_text = after_file.read().decode("utf-8")
 
@@ -1361,18 +1439,25 @@ with tab3:
                 else:
 
                     def run_vendor_audit(vendor_name, config):
+
                         if vendor_name == "Cisco":
                             return check_cisco_compliance(config)
+
                         elif vendor_name == "Fortinet":
                             return check_fortinet_compliance(config)
+
                         elif vendor_name == "Palo Alto":
                             return check_paloalto_compliance(config)
+
                         elif vendor_name == "Juniper":
                             return check_juniper_compliance(config)
+
                         elif vendor_name == "Arista":
                             return check_arista_compliance(config)
+
                         elif vendor_name == "Check Point":
                             return check_checkpoint_compliance(config)
+
                         return []
 
                     before_results = run_vendor_audit(
@@ -1386,20 +1471,26 @@ with tab3:
                     )
 
                     before_passed = sum(
-                        1 for r in before_results
+                        1
+                        for r in before_results
                         if r.get("status") == "PASS"
                     )
+
                     after_passed = sum(
-                        1 for r in after_results
+                        1
+                        for r in after_results
                         if r.get("status") == "PASS"
                     )
 
                     before_failed = sum(
-                        1 for r in before_results
+                        1
+                        for r in before_results
                         if r.get("status") == "FAIL"
                     )
+
                     after_failed = sum(
-                        1 for r in after_results
+                        1
+                        for r in after_results
                         if r.get("status") == "FAIL"
                     )
 
@@ -1420,12 +1511,14 @@ with tab3:
                     b1, b2, b3, b4 = st.columns(4)
 
                     with b1:
+
                         st.metric(
                             "Before Score",
                             f"{before_score}%"
                         )
 
                     with b2:
+
                         st.metric(
                             "After Score",
                             f"{after_score}%",
@@ -1433,12 +1526,14 @@ with tab3:
                         )
 
                     with b3:
+
                         st.metric(
                             "Findings Before",
                             before_failed
                         )
 
                     with b4:
+
                         st.metric(
                             "Findings After",
                             after_failed,
@@ -1531,12 +1626,19 @@ with tab3:
                         )
 
                         if before_status == "FAIL" and after_status == "PASS":
+
                             change = "🟢 Resolved"
+
                         elif before_status == "PASS" and after_status == "FAIL":
+
                             change = "🔴 Regressed"
+
                         elif before_status == after_status:
+
                             change = "⚪ Unchanged"
+
                         else:
+
                             change = "🟡 Changed"
 
                         comparison_rows.append(
@@ -1962,7 +2064,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-
-
