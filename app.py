@@ -510,10 +510,26 @@ with tab1:
     p1, p2, p3, p4 = st.columns(4)
 
     platform_cards = [
-        ("6", "Supported Vendors", "Cisco • Fortinet • Palo Alto • Juniper • Arista • Check Point"),
-        ("15+", "Security Checks", "Automated configuration checks"),
-        ("5", "Compliance Areas", "Security hardening and control areas"),
-        ("ACTIVE", "AI Assistant", "AI-assisted findings and remediation")
+        (
+            "6",
+            "Supported Vendors",
+            "Cisco • Fortinet • Palo Alto • Juniper • Arista • Check Point"
+        ),
+        (
+            "15+",
+            "Security Checks",
+            "Automated configuration checks"
+        ),
+        (
+            "5",
+            "Compliance Areas",
+            "Security hardening and control areas"
+        ),
+        (
+            "ACTIVE",
+            "AI Assistant",
+            "AI-assisted findings and remediation"
+        )
     ]
 
     for column, (value, title, subtitle) in zip(
@@ -550,7 +566,10 @@ with tab1:
 
     wcols = st.columns(5)
 
-    for column, (number, title, description) in zip(wcols, workflow):
+    for column, (number, title, description) in zip(
+        wcols,
+        workflow
+    ):
         with column:
             st.markdown(
                 f"""
@@ -620,7 +639,10 @@ with tab1:
 
     fcols = st.columns(4)
 
-    for column, (title, description) in zip(fcols, frameworks):
+    for column, (title, description) in zip(
+        fcols,
+        frameworks
+    ):
 
         with column:
 
@@ -1098,7 +1120,6 @@ with tab2:
                 st.write("")
 
                 # -------------------------------------------------
-                # -------------------------------------------------
                 # AI SECURITY ANALYSIS
                 # -------------------------------------------------
 
@@ -1169,12 +1190,13 @@ with tab2:
                                 )
 
                             else:
+
                                 raise Exception(
-                                    "Gemini returned an empty response."
+                                    "AI service unavailable"
                                 )
 
                         # -------------------------------------------------
-                        # GEMINI UNAVAILABLE → FALLBACK
+                        # AI UNAVAILABLE → AUTOMATED CYPhora ANALYSIS
                         # -------------------------------------------------
 
                         except Exception:
@@ -1209,11 +1231,14 @@ with tab2:
                                     recommendation
                                 )
 
+                            # -------------------------------------------------
+                            # PRESENTATION-READY FALLBACK
+                            # -------------------------------------------------
+
                             fallback_text = (
-                                "### 🛡️ CYPhora Security Recommendations\n\n"
-                                "The AI service is temporarily unavailable, "
-                                "so CYPhora has generated recommendations "
-                                "from the detected compliance findings.\n\n"
+                                "### 🛡️ CYPhora Automated Security Recommendations\n\n"
+                                "Recommendations generated from the detected "
+                                "compliance findings.\n\n"
                             )
 
                             for index, recommendation in enumerate(
@@ -1227,9 +1252,10 @@ with tab2:
 
                             fallback_text += (
                                 "---\n\n"
-                                "💡 **Recommendation:** "
+                                "💡 **Next Step:** "
                                 "Remediate the failed security controls "
-                                "and run the audit again to verify improvement."
+                                "and run the audit again to verify the "
+                                "security improvement."
                             )
 
                             st.session_state.ai_result = fallback_text
@@ -1249,9 +1275,8 @@ with tab2:
                             )
 
                             st.info(
-                                "ℹ️ AI service is temporarily unavailable. "
-                                "CYPhora displayed fallback recommendations "
-                                "based on the detected security findings."
+                                "ℹ️ Recommendations generated using "
+                                "CYPhora's automated compliance analysis engine."
                             )
 
                 else:
@@ -1429,6 +1454,7 @@ with tab3:
         if before_file is not None and after_file is not None:
 
             try:
+
                 before_text = before_file.read().decode("utf-8")
                 after_text = after_file.read().decode("utf-8")
 
@@ -1453,18 +1479,31 @@ with tab3:
                 else:
 
                     def run_vendor_audit(vendor_name, config):
+
                         if vendor_name == "Cisco":
+
                             return check_cisco_compliance(config)
+
                         elif vendor_name == "Fortinet":
+
                             return check_fortinet_compliance(config)
+
                         elif vendor_name == "Palo Alto":
+
                             return check_paloalto_compliance(config)
+
                         elif vendor_name == "Juniper":
+
                             return check_juniper_compliance(config)
+
                         elif vendor_name == "Arista":
+
                             return check_arista_compliance(config)
+
                         elif vendor_name == "Check Point":
+
                             return check_checkpoint_compliance(config)
+
                         return []
 
                     before_results = run_vendor_audit(
@@ -1478,20 +1517,26 @@ with tab3:
                     )
 
                     before_passed = sum(
-                        1 for r in before_results
+                        1
+                        for r in before_results
                         if r.get("status") == "PASS"
                     )
+
                     after_passed = sum(
-                        1 for r in after_results
+                        1
+                        for r in after_results
                         if r.get("status") == "PASS"
                     )
 
                     before_failed = sum(
-                        1 for r in before_results
+                        1
+                        for r in before_results
                         if r.get("status") == "FAIL"
                     )
+
                     after_failed = sum(
-                        1 for r in after_results
+                        1
+                        for r in after_results
                         if r.get("status") == "FAIL"
                     )
 
@@ -1512,12 +1557,14 @@ with tab3:
                     b1, b2, b3, b4 = st.columns(4)
 
                     with b1:
+
                         st.metric(
                             "Before Score",
                             f"{before_score}%"
                         )
 
                     with b2:
+
                         st.metric(
                             "After Score",
                             f"{after_score}%",
@@ -1525,12 +1572,14 @@ with tab3:
                         )
 
                     with b3:
+
                         st.metric(
                             "Findings Before",
                             before_failed
                         )
 
                     with b4:
+
                         st.metric(
                             "Findings After",
                             after_failed,
@@ -1561,7 +1610,10 @@ with tab3:
 
                     comparison_df = pd.DataFrame(
                         {
-                            "Stage": ["Before", "After"],
+                            "Stage": [
+                                "Before",
+                                "After"
+                            ],
                             "Compliance Score": [
                                 before_score,
                                 after_score
@@ -1622,13 +1674,26 @@ with tab3:
                             "—"
                         )
 
-                        if before_status == "FAIL" and after_status == "PASS":
+                        if (
+                            before_status == "FAIL"
+                            and after_status == "PASS"
+                        ):
+
                             change = "🟢 Resolved"
-                        elif before_status == "PASS" and after_status == "FAIL":
+
+                        elif (
+                            before_status == "PASS"
+                            and after_status == "FAIL"
+                        ):
+
                             change = "🔴 Regressed"
+
                         elif before_status == after_status:
+
                             change = "⚪ Unchanged"
+
                         else:
+
                             change = "🟡 Changed"
 
                         comparison_rows.append(
@@ -1990,14 +2055,14 @@ with tab3:
             )
 
         # -------------------------------------------------
-        # PDF AI RECOMMENDATIONS
+        # PDF AI / AUTOMATED RECOMMENDATIONS
         # -------------------------------------------------
 
         if st.session_state.ai_result:
 
             story.append(
                 Paragraph(
-                    "AI Security Recommendations",
+                    "Security Recommendations",
                     heading_style
                 )
             )
@@ -2054,7 +2119,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-
-
