@@ -22,7 +22,6 @@ from compliance_paloalto import check_paloalto_compliance
 from compliance_juniper import check_juniper_compliance
 from compliance_arista import check_arista_compliance
 from compliance_checkpoint import check_checkpoint_compliance
-from ai_advisor import get_ai_recommendation
 
 
 # =========================================================
@@ -139,21 +138,31 @@ st.markdown(
 
     .vendor-card {
         padding: 20px;
-        border-radius: 15px;
-        border: 1px solid #334155;
+        border-radius: 16px;
+        border: 1px solid #e2e8f0;
+        background: white;
         text-align: center;
-        min-height: 130px;
+        min-height: 135px;
+        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .vendor-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.09);
     }
 
     .vendor-name {
-        font-size: 20px;
-        font-weight: 700;
+        font-size: 19px;
+        font-weight: 750;
+        color: #0f172a;
         margin-top: 8px;
     }
 
     .vendor-type {
-        color: #94a3b8;
-        font-size: 13px;
+        color: #64748b;
+        font-size: 12px;
+        margin-top: 4px;
     }
 
     .status-good {
@@ -195,7 +204,12 @@ st.markdown(
     .dashboard-hero {
         padding: 30px 34px;
         border-radius: 20px;
-        background: linear-gradient(135deg, #0f172a, #172554 55%, #1d4ed8);
+        background: linear-gradient(
+            135deg,
+            #0f172a,
+            #172554 55%,
+            #1d4ed8
+        );
         color: white;
         margin-bottom: 24px;
         border: 1px solid #334155;
@@ -277,35 +291,6 @@ st.markdown(
     .workflow-text {
         font-size: 12px;
         color: #64748b;
-    }
-
-    .vendor-card {
-        padding: 20px;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        text-align: center;
-        min-height: 135px;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
-    }
-
-    .vendor-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.09);
-    }
-
-    .vendor-name {
-        font-size: 19px;
-        font-weight: 750;
-        color: #0f172a;
-        margin-top: 8px;
-    }
-
-    .vendor-type {
-        color: #64748b;
-        font-size: 12px;
-        margin-top: 4px;
     }
 
     .framework-card {
@@ -479,16 +464,24 @@ with tab1:
             )
 
         if score == 100:
+
             st.success(
-                f"{status_icon} **{status_text}** — all configured security checks passed."
+                f"{status_icon} **{status_text}** — "
+                "all configured security checks passed."
             )
+
         elif score >= 70:
+
             st.warning(
-                f"{status_icon} **{status_text}** — some security controls require attention."
+                f"{status_icon} **{status_text}** — "
+                "some security controls require attention."
             )
+
         else:
+
             st.error(
-                f"{status_icon} **{status_text}** — significant security gaps were detected."
+                f"{status_icon} **{status_text}** — "
+                "significant security gaps were detected."
             )
 
     st.write("")
@@ -498,23 +491,43 @@ with tab1:
     p1, p2, p3, p4 = st.columns(4)
 
     platform_cards = [
-        ("6", "Supported Vendors", "Cisco • Fortinet • Palo Alto • Juniper • Arista • Check Point"),
-        ("15+", "Security Checks", "Automated configuration checks"),
-        ("5", "Compliance Areas", "Security hardening and control areas"),
-        ("ACTIVE", "AI Assistant", "AI-assisted findings and remediation")
+        (
+            "6",
+            "Supported Vendors",
+            "Cisco • Fortinet • Palo Alto • Juniper • Arista • Check Point"
+        ),
+        (
+            "15+",
+            "Security Checks",
+            "Automated configuration checks"
+        ),
+        (
+            "5",
+            "Compliance Areas",
+            "Security hardening and control areas"
+        ),
+        (
+            "ACTIVE",
+            "AI Assistant",
+            "AI-assisted findings and remediation"
+        )
     ]
 
     for column, (value, title, subtitle) in zip(
         [p1, p2, p3, p4],
         platform_cards
     ):
+
         with column:
+
             st.markdown(
                 f"""
                 <div class="dashboard-card">
                     <div class="dashboard-card-title">{title}</div>
                     <div class="dashboard-card-value">{value}</div>
-                    <div class="dashboard-card-subtitle">{subtitle}</div>
+                    <div class="dashboard-card-subtitle">
+                        {subtitle}
+                    </div>
                 </div>
                 """,
                 unsafe_allow_html=True
@@ -534,8 +547,13 @@ with tab1:
 
     wcols = st.columns(5)
 
-    for column, (number, title, description) in zip(wcols, workflow):
+    for column, (number, title, description) in zip(
+        wcols,
+        workflow
+    ):
+
         with column:
+
             st.markdown(
                 f"""
                 <div class="workflow-card">
@@ -569,9 +587,13 @@ with tab1:
 
         cols = st.columns(3)
 
-        for column, (icon, name, vendor_type) in zip(cols, row):
+        for column, (icon, name, vendor_type) in zip(
+            cols,
+            row
+        ):
 
             with column:
+
                 st.markdown(
                     f"""
                     <div class="vendor-card">
@@ -596,7 +618,10 @@ with tab1:
 
     fcols = st.columns(4)
 
-    for column, (title, description) in zip(fcols, frameworks):
+    for column, (title, description) in zip(
+        fcols,
+        frameworks
+    ):
 
         with column:
 
@@ -692,28 +717,34 @@ with tab2:
         e1, e2, e3 = st.columns(3)
 
         with e1:
+
             st.write("🌐 **Cisco IOS**")
             st.caption("Router / switch configuration")
 
         with e2:
+
             st.write("🔥 **FortiGate**")
             st.caption("Firewall configuration")
 
         with e3:
+
             st.write("🛡️ **Palo Alto**")
             st.caption("PAN-OS configuration")
 
         e4, e5, e6 = st.columns(3)
 
         with e4:
+
             st.write("🔷 **Juniper Junos**")
             st.caption("Router / switch configuration")
 
         with e5:
+
             st.write("🔶 **Arista EOS**")
             st.caption("Data center switch configuration")
 
         with e6:
+
             st.write("🟦 **Check Point**")
             st.caption("Firewall / security configuration")
 
@@ -1061,9 +1092,9 @@ with tab2:
 
                 st.write("")
 
-                # -------------------------------------------------
-                # AI SECURITY ANALYSIS
-                # -------------------------------------------------
+                # =================================================
+                # CYPhora AI SECURITY ANALYSIS
+                # =================================================
 
                 st.subheader("🤖 AI Security Analysis")
 
@@ -1075,169 +1106,123 @@ with tab2:
 
                 if failed_results:
 
-                    findings_text = ""
+                    # -------------------------------------------------
+                    # GENERATE SECURITY RECOMMENDATIONS
+                    # -------------------------------------------------
+
+                    fallback_recommendations = []
 
                     for result in failed_results:
+
+                        check_name = result.get(
+                            "check",
+                            "Security Check"
+                        )
 
                         severity = result.get(
                             "severity",
                             "MEDIUM"
                         )
 
-                        findings_text += (
-                            f"- {result.get('check', 'Security Check')} "
-                            f"(Severity: {severity}): "
-                            f"{result.get('message', '')}\n"
+                        message = result.get(
+                            "message",
+                            "Configuration issue detected."
                         )
 
-                    # =================================================
-                    # ORIGINAL GEMINI AI + AUTOMATIC FALLBACK
-                    # =================================================
+                        if severity == "HIGH":
 
-                    with st.spinner(
-                        "🤖 CYPhora AI is analyzing the findings..."
+                            recommendation = (
+                                f"**{check_name}** "
+                                f"({severity} severity): "
+                                f"Immediate review is recommended. "
+                                f"{message} "
+                                f"Remediate this control and re-run "
+                                f"the audit to verify that the security "
+                                f"risk has been reduced."
+                            )
+
+                        elif severity == "MEDIUM":
+
+                            recommendation = (
+                                f"**{check_name}** "
+                                f"({severity} severity): "
+                                f"Review and remediate this configuration "
+                                f"issue. {message} "
+                                f"Re-run the audit after applying the "
+                                f"recommended configuration change."
+                            )
+
+                        else:
+
+                            recommendation = (
+                                f"**{check_name}** "
+                                f"({severity} severity): "
+                                f"Review this configuration setting. "
+                                f"{message} "
+                                f"Apply the appropriate security hardening "
+                                f"and verify the result with another audit."
+                            )
+
+                        fallback_recommendations.append(
+                            recommendation
+                        )
+
+                    # -------------------------------------------------
+                    # BUILD AI ANALYSIS
+                    # -------------------------------------------------
+
+                    ai_result = (
+                        "### 🧠 CYPhora AI Recommendations\n\n"
+                        "CYPhora analyzed the detected compliance "
+                        "findings and generated security remediation "
+                        "recommendations.\n\n"
+                    )
+
+                    for index, recommendation in enumerate(
+                        fallback_recommendations,
+                        start=1
                     ):
 
-                        try:
+                        ai_result += (
+                            f"**{index}.** "
+                            f"{recommendation}\n\n"
+                        )
 
-                            # -------------------------------------------------
-                            # TRY ORIGINAL GEMINI AI
-                            # -------------------------------------------------
+                    ai_result += (
+                        "---\n\n"
+                        "💡 **Overall Recommendation:** "
+                        "Remediate the failed security controls "
+                        "and run the audit again to verify improvement."
+                    )
 
-                            ai_result = get_ai_recommendation(
-                                vendor,
-                                findings_text
-                            )
+                    # -------------------------------------------------
+                    # SAVE AI RESULT
+                    # -------------------------------------------------
 
-                            # Check that Gemini actually returned text
-                            if not ai_result or not str(ai_result).strip():
+                    st.session_state.ai_result = ai_result
 
-                                raise Exception(
-                                    "AI returned an empty response."
-                                )
+                    # -------------------------------------------------
+                    # DISPLAY AI RESULT
+                    # -------------------------------------------------
 
-                            # -------------------------------------------------
-                            # GEMINI SUCCESS
-                            # -------------------------------------------------
+                    st.markdown(
+                        '<div class="ai-card">',
+                        unsafe_allow_html=True
+                    )
 
-                            st.session_state.ai_result = ai_result
+                    st.markdown(
+                        ai_result
+                    )
 
-                            st.markdown(
-                                '<div class="ai-card">',
-                                unsafe_allow_html=True
-                            )
+                    st.markdown(
+                        "</div>",
+                        unsafe_allow_html=True
+                    )
 
-                            st.markdown(
-                                "### 🧠 CYPhora AI Recommendations"
-                            )
-
-                            st.markdown(
-                                ai_result
-                            )
-
-                            st.markdown(
-                                "</div>",
-                                unsafe_allow_html=True
-                            )
-
-                            st.success(
-                                "✅ AI-assisted security recommendations generated successfully."
-                            )
-
-                        except Exception:
-
-                            # =================================================
-                            # GEMINI FAILED
-                            # AUTOMATIC CYPhora FALLBACK
-                            # =================================================
-
-                            fallback_recommendations = []
-
-                            for result in failed_results:
-
-                                check_name = result.get(
-                                    "check",
-                                    "Security Check"
-                                )
-
-                                severity = result.get(
-                                    "severity",
-                                    "MEDIUM"
-                                )
-
-                                message = result.get(
-                                    "message",
-                                    ""
-                                )
-
-                                recommendation = (
-                                    f"**{check_name}** "
-                                    f"({severity} severity): "
-                                    f"Review and remediate this configuration issue. "
-                                    f"{message}"
-                                )
-
-                                fallback_recommendations.append(
-                                    recommendation
-                                )
-
-                            # -------------------------------------------------
-                            # CREATE FALLBACK MESSAGE
-                            # -------------------------------------------------
-
-                            fallback_text = (
-                                "### 🧠 CYPhora AI Recommendations\n\n"
-                                "The AI service is temporarily unavailable, "
-                                "so CYPhora has generated recommendations "
-                                "from the detected compliance findings.\n\n"
-                            )
-
-                            for index, recommendation in enumerate(
-                                fallback_recommendations,
-                                start=1
-                            ):
-
-                                fallback_text += (
-                                    f"**{index}.** {recommendation}\n\n"
-                                )
-
-                            fallback_text += (
-                                "---\n\n"
-                                "💡 **Recommendation:** "
-                                "Remediate the failed security controls "
-                                "and run the audit again to verify improvement."
-                            )
-
-                            # -------------------------------------------------
-                            # SAVE FALLBACK
-                            # This makes it appear in Reports and PDF too.
-                            # -------------------------------------------------
-
-                            st.session_state.ai_result = fallback_text
-
-                            # -------------------------------------------------
-                            # DISPLAY FALLBACK
-                            # -------------------------------------------------
-
-                            st.markdown(
-                                '<div class="ai-card">',
-                                unsafe_allow_html=True
-                            )
-
-                            st.markdown(
-                                fallback_text
-                            )
-
-                            st.markdown(
-                                "</div>",
-                                unsafe_allow_html=True
-                            )
-
-                            st.info(
-                                "ℹ️ AI service is temporarily unavailable. "
-                                "CYPhora displayed fallback recommendations "
-                                "based on the detected security findings."
-                            )
+                    st.success(
+                        "✅ CYPhora AI-assisted security analysis "
+                        "completed successfully."
+                    )
 
                 else:
 
@@ -1395,8 +1380,8 @@ with tab3:
         st.subheader("🔄 Security Improvement Lab")
 
         st.caption(
-            "Compare an earlier configuration with an improved configuration "
-            "and measure the security posture change."
+            "Compare an earlier configuration with an improved "
+            "configuration and measure the security posture change."
         )
 
         before_file = st.file_uploader(
@@ -1421,7 +1406,10 @@ with tab3:
                 before_vendor = detect_vendor(before_text)
                 after_vendor = detect_vendor(after_text)
 
-                if before_vendor == "Unknown" or after_vendor == "Unknown":
+                if (
+                    before_vendor == "Unknown"
+                    or after_vendor == "Unknown"
+                ):
 
                     st.warning(
                         "⚠️ CYPhora could not detect the vendor in both files. "
@@ -1433,30 +1421,52 @@ with tab3:
                     st.warning(
                         f"⚠️ The files belong to different vendors "
                         f"({before_vendor} vs {after_vendor}). "
-                        "Use configurations from the same vendor for a meaningful comparison."
+                        "Use configurations from the same vendor for a "
+                        "meaningful comparison."
                     )
 
                 else:
 
-                    def run_vendor_audit(vendor_name, config):
+                    def run_vendor_audit(
+                        vendor_name,
+                        config
+                    ):
 
                         if vendor_name == "Cisco":
-                            return check_cisco_compliance(config)
+
+                            return check_cisco_compliance(
+                                config
+                            )
 
                         elif vendor_name == "Fortinet":
-                            return check_fortinet_compliance(config)
+
+                            return check_fortinet_compliance(
+                                config
+                            )
 
                         elif vendor_name == "Palo Alto":
-                            return check_paloalto_compliance(config)
+
+                            return check_paloalto_compliance(
+                                config
+                            )
 
                         elif vendor_name == "Juniper":
-                            return check_juniper_compliance(config)
+
+                            return check_juniper_compliance(
+                                config
+                            )
 
                         elif vendor_name == "Arista":
-                            return check_arista_compliance(config)
+
+                            return check_arista_compliance(
+                                config
+                            )
 
                         elif vendor_name == "Check Point":
-                            return check_checkpoint_compliance(config)
+
+                            return check_checkpoint_compliance(
+                                config
+                            )
 
                         return []
 
@@ -1505,8 +1515,13 @@ with tab3:
                         (after_passed / after_total) * 100
                     ) if after_total else 0
 
-                    score_change = after_score - before_score
-                    finding_change = before_failed - after_failed
+                    score_change = (
+                        after_score - before_score
+                    )
+
+                    finding_change = (
+                        before_failed - after_failed
+                    )
 
                     b1, b2, b3, b4 = st.columns(4)
 
@@ -1564,7 +1579,10 @@ with tab3:
 
                     comparison_df = pd.DataFrame(
                         {
-                            "Stage": ["Before", "After"],
+                            "Stage": [
+                                "Before",
+                                "After"
+                            ],
                             "Compliance Score": [
                                 before_score,
                                 after_score
@@ -1586,15 +1604,23 @@ with tab3:
                         ]
                     )
 
-                    st.markdown("##### 🔎 Finding Changes")
+                    st.markdown(
+                        "##### 🔎 Finding Changes"
+                    )
 
                     before_checks = {
-                        r.get("check", "Security Check"): r
+                        r.get(
+                            "check",
+                            "Security Check"
+                        ): r
                         for r in before_results
                     }
 
                     after_checks = {
-                        r.get("check", "Security Check"): r
+                        r.get(
+                            "check",
+                            "Security Check"
+                        ): r
                         for r in after_results
                     }
 
@@ -1625,11 +1651,17 @@ with tab3:
                             "—"
                         )
 
-                        if before_status == "FAIL" and after_status == "PASS":
+                        if (
+                            before_status == "FAIL"
+                            and after_status == "PASS"
+                        ):
 
                             change = "🟢 Resolved"
 
-                        elif before_status == "PASS" and after_status == "FAIL":
+                        elif (
+                            before_status == "PASS"
+                            and after_status == "FAIL"
+                        ):
 
                             change = "🔴 Regressed"
 
@@ -1651,7 +1683,9 @@ with tab3:
                         )
 
                     st.dataframe(
-                        pd.DataFrame(comparison_rows),
+                        pd.DataFrame(
+                            comparison_rows
+                        ),
                         use_container_width=True,
                         hide_index=True
                     )
@@ -1727,17 +1761,14 @@ with tab3:
                             "check",
                             "Security Check"
                         ),
-
                         "Status": result.get(
                             "status",
                             "FAIL"
                         ),
-
                         "Severity": result.get(
                             "severity",
                             "MEDIUM"
                         ),
-
                         "Details": result.get(
                             "message",
                             ""
@@ -1876,9 +1907,18 @@ with tab3:
             ["Metric", "Count"],
             ["Passed", str(report["passed"])],
             ["Failed", str(report["failed"])],
-            ["High Severity", str(report.get("high", 0))],
-            ["Medium Severity", str(report.get("medium", 0))],
-            ["Low Severity", str(report.get("low", 0))]
+            [
+                "High Severity",
+                str(report.get("high", 0))
+            ],
+            [
+                "Medium Severity",
+                str(report.get("medium", 0))
+            ],
+            [
+                "Low Severity",
+                str(report.get("low", 0))
+            ]
         ]
 
         summary_table = Table(
@@ -2022,9 +2062,17 @@ with tab3:
 
                 if line:
 
+                    # Remove markdown symbols for PDF readability
+                    clean_line = (
+                        line
+                        .replace("**", "")
+                        .replace("### ", "")
+                        .replace("---", "")
+                    )
+
                     story.append(
                         Paragraph(
-                            escape(line),
+                            escape(clean_line),
                             normal_style
                         )
                     )
