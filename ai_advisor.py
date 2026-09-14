@@ -40,10 +40,7 @@ def get_ai_recommendation(vendor, findings):
     # --------------------------------------------------------
 
     if client is None:
-        return (
-            "⚠️ AI recommendation is unavailable because the "
-            "GEMINI_API_KEY is not configured."
-        )
+        return ""
 
 
     # --------------------------------------------------------
@@ -82,7 +79,7 @@ IMPORTANT RULES:
 
 
     # --------------------------------------------------------
-    # TRY GEMINI UP TO 3 TIMES
+    # TRY GEMINI
     # --------------------------------------------------------
 
     for attempt in range(3):
@@ -96,14 +93,12 @@ IMPORTANT RULES:
 
 
             # ------------------------------------------------
-            # SUCCESSFUL RESPONSE
+            # SUCCESS
             # ------------------------------------------------
 
             if response and response.text:
                 return response.text
 
-
-            # Empty response
             return ""
 
 
@@ -113,25 +108,46 @@ IMPORTANT RULES:
 
 
             # ------------------------------------------------
-            # GEMINI TEMPORARILY UNAVAILABLE / 503
+            # GEMINI QUOTA EXCEEDED / RATE LIMIT
+            # 429 RESOURCE_EXHAUSTED
             # ------------------------------------------------
 
-            if "503" in error_message or "UNAVAILABLE" in error_message:
+            if (
+                "429" in error_message
+                or "RESOURCE_EXHAUSTED" in error_message
+                or "quota" in error_message.lower()
+                or "rate limit" in error_message.lower()
+            ):
 
-                # Retry twice
+                # Retry once after a short delay.
+                # If quota is exhausted, the fallback in app.py
+                # will automatically be displayed.
                 if attempt < 2:
                     time.sleep(3)
                     continue
 
-                # Return empty so app.py uses fallback
                 return ""
 
 
             # ------------------------------------------------
-            # OTHER GEMINI ERRORS
+            # GEMINI TEMPORARILY UNAVAILABLE
+            # 503
             # ------------------------------------------------
 
-            return (
-                f"⚠️ AI recommendation could not be generated: "
-                f"{error_message}"
-            )
+            if (
+                "503" in error_message
+                or "UNAVAILABLE" in error_message
+            ):
+
+                if attempt < 2:
+                    time.sleep(3)
+                    continue
+
+                return ""
+
+
+            # ------------------------------------------------
+            # OTHER ERRORS
+            # ------------------------------------------------
+
+            return ""
