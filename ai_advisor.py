@@ -1,4 +1,5 @@
 import os
+import time
 
 from google import genai
 
@@ -26,7 +27,7 @@ def get_ai_recommendation(vendor, findings):
 
     if client is None:
         return (
-            "AI recommendation is unavailable because the "
+            "⚠️ AI recommendation is unavailable because the "
             "GEMINI_API_KEY is not configured."
         )
 
@@ -60,13 +61,39 @@ IMPORTANT RULES:
 - Format the response using clear headings and bullet points.
 """
 
-    try:
-        response = client.models.generate_content(
-            model="gemini-3.6-flash",
-            contents=prompt
-        )
+    # Try Gemini up to 3 times if the service is temporarily unavailable
+    for attempt in range(3):
 
-        return response.text
+        try:
+            response = client.models.generate_content(
+                model="gemini-3.6-flash",
+                contents=prompt
+            )
 
-    except Exception as e:
-        return f"AI recommendation could not be generated: {str(e)}"
+            if response and response.text:
+                return response.text
+
+            return "⚠️ Gemini returned an empty response."
+
+        except Exception as e:
+
+            error_message = str(e)
+
+            # Retry temporary 503/high-demand errors
+            if "503" in error_message or "UNAVAILABLE" in error_message:
+
+                if attempt < 2:
+                    time.sleep(3)
+                    continue
+
+                return (
+                    "⚠️ CYPhora AI is temporarily unavailable because "
+                    "the Gemini service is experiencing high demand. "
+                    "Please try the audit again in a few moments."
+                )
+
+            # Other errors should be shown normally
+            return (
+                f"⚠️ AI recommendation could not be generated: "
+                f"{error_message}"
+            )
