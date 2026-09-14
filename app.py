@@ -1250,14 +1250,12 @@ with tab2:
                                     f"**{index}.** {recommendation}\n\n"
                                 )
 
-                            fallback_text += (
-                                "---\n\n"
-                                "💡 **Next Step:** "
-                                "Remediate the failed security controls "
-                                "and run the audit again to verify the "
-                                "security improvement."
+                            fallback_text = (
+                                "### 🧠 CYPhora AI Recommendations\n\n"
+                                "The AI service is temporarily unavailable, "
+                                "so CYPhora has generated recommendations "
+                                "from the detected compliance findings.\n\n"
                             )
-
                             st.session_state.ai_result = fallback_text
 
                             st.markdown(
