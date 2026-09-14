@@ -1196,7 +1196,7 @@ with tab2:
                                 )
 
                         # -------------------------------------------------
-                        # AI UNAVAILABLE → AUTOMATED CYPhora ANALYSIS
+                        # AI UNAVAILABLE → FALLBACK
                         # -------------------------------------------------
 
                         except Exception:
@@ -1232,13 +1232,14 @@ with tab2:
                                 )
 
                             # -------------------------------------------------
-                            # PRESENTATION-READY FALLBACK
+                            # ORIGINAL PRESENTATION-READY FALLBACK
                             # -------------------------------------------------
 
                             fallback_text = (
-                                "### 🛡️ CYPhora Automated Security Recommendations\n\n"
-                                "Recommendations generated from the detected "
-                                "compliance findings.\n\n"
+                                "### 🧠 CYPhora AI Recommendations\n\n"
+                                "The AI service is temporarily unavailable, "
+                                "so CYPhora has generated recommendations "
+                                "from the detected compliance findings.\n\n"
                             )
 
                             for index, recommendation in enumerate(
@@ -1250,12 +1251,13 @@ with tab2:
                                     f"**{index}.** {recommendation}\n\n"
                                 )
 
-                            fallback_text = (
-                                "### 🧠 CYPhora AI Recommendations\n\n"
-                                "The AI service is temporarily unavailable, "
-                                "so CYPhora has generated recommendations "
-                                "from the detected compliance findings.\n\n"
+                            fallback_text += (
+                                "---\n\n"
+                                "💡 **Recommendation:** "
+                                "Remediate the failed security controls "
+                                "and run the audit again to verify improvement."
                             )
+
                             st.session_state.ai_result = fallback_text
 
                             st.markdown(
@@ -1273,8 +1275,9 @@ with tab2:
                             )
 
                             st.info(
-                                "ℹ️ Recommendations generated using "
-                                "CYPhora's automated compliance analysis engine."
+                                "ℹ️ AI service is temporarily unavailable. "
+                                "CYPhora displayed fallback recommendations "
+                                "based on the detected security findings."
                             )
 
                 else:
