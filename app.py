@@ -57,78 +57,497 @@ if "after_audit" not in st.session_state:
 
 
 # =========================================================
-# CUSTOM CSS
+# CUSTOM CSS — CYPhora PROFESSIONAL CYBERSECURITY THEME
 # =========================================================
 
 st.markdown(
     """
     <style>
 
+    /* =====================================================
+       GLOBAL APPLICATION
+       ===================================================== */
+
+    .stApp {
+        background:
+            radial-gradient(
+                circle at 15% 10%,
+                rgba(37, 99, 235, 0.10),
+                transparent 28%
+            ),
+            radial-gradient(
+                circle at 85% 20%,
+                rgba(6, 182, 212, 0.08),
+                transparent 25%
+            ),
+            #07111f;
+        color: #e5edf7;
+    }
+
+    [data-testid="stAppViewContainer"] {
+        background: transparent;
+    }
+
+    [data-testid="stHeader"] {
+        background: rgba(7, 17, 31, 0.80);
+    }
+
+    [data-testid="stToolbar"] {
+        background: transparent;
+    }
+
     .main {
-        padding-top: 1rem;
+        padding-top: 0.5rem;
     }
 
     .block-container {
-        padding-top: 2rem;
+        padding-top: 1.5rem;
         padding-bottom: 3rem;
-        max-width: 1400px;
+        max-width: 1450px;
     }
 
+
+    /* =====================================================
+       SIDEBAR
+       ===================================================== */
+
+    [data-testid="stSidebar"] {
+        background:
+            linear-gradient(
+                180deg,
+                #081525 0%,
+                #0b1728 50%,
+                #07111f 100%
+            );
+        border-right: 1px solid rgba(56, 189, 248, 0.14);
+    }
+
+    [data-testid="stSidebar"] * {
+        color: #dbeafe;
+    }
+
+
+    /* =====================================================
+       TAB NAVIGATION
+       ===================================================== */
+
+    [data-baseweb="tab-list"] {
+        gap: 8px;
+        background: rgba(10, 25, 43, 0.72);
+        padding: 7px;
+        border-radius: 14px;
+        border: 1px solid rgba(56, 189, 248, 0.14);
+        margin-bottom: 24px;
+    }
+
+    [data-baseweb="tab"] {
+        height: 48px;
+        padding: 0 22px;
+        border-radius: 10px;
+        color: #94a3b8;
+        font-weight: 650;
+        background: transparent;
+    }
+
+    [data-baseweb="tab"]:hover {
+        color: #e0f2fe;
+        background: rgba(14, 165, 233, 0.08);
+    }
+
+    [aria-selected="true"] {
+        color: #ffffff !important;
+        background:
+            linear-gradient(
+                135deg,
+                rgba(37, 99, 235, 0.32),
+                rgba(6, 182, 212, 0.18)
+            ) !important;
+        border: 1px solid rgba(56, 189, 248, 0.30);
+    }
+
+
+    /* =====================================================
+       HEADINGS
+       ===================================================== */
+
+    h1, h2, h3, h4 {
+        color: #f8fafc !important;
+        letter-spacing: -0.3px;
+    }
+
+    h3 {
+        margin-top: 20px;
+    }
+
+    p {
+        color: #cbd5e1;
+    }
+
+
+    /* =====================================================
+       MAIN HERO
+       ===================================================== */
+
     .hero {
-        padding: 28px;
-        border-radius: 18px;
-        background: linear-gradient(
-            135deg,
-            #0f172a 0%,
-            #172554 55%,
-            #1e3a8a 100%
-        );
+        padding: 30px;
+        border-radius: 20px;
+        background:
+            radial-gradient(
+                circle at 85% 20%,
+                rgba(34, 211, 238, 0.18),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #071426 0%,
+                #0b1e3a 48%,
+                #0f3b66 100%
+            );
         color: white;
         margin-bottom: 25px;
-        border: 1px solid #334155;
+        border: 1px solid rgba(56, 189, 248, 0.25);
+        box-shadow:
+            0 15px 45px rgba(0, 0, 0, 0.28),
+            inset 0 1px 0 rgba(255,255,255,0.04);
     }
 
     .hero-title {
-        font-size: 42px;
-        font-weight: 800;
+        font-size: 44px;
+        font-weight: 850;
         margin-bottom: 5px;
+        letter-spacing: -1px;
     }
 
     .hero-subtitle {
         font-size: 18px;
-        color: #cbd5e1;
+        color: #bfdbfe;
         margin-bottom: 12px;
     }
 
     .hero-tag {
         display: inline-block;
-        padding: 6px 12px;
-        border-radius: 20px;
-        background: #1e40af;
-        color: white;
+        padding: 7px 13px;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.13);
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        color: #dff6ff;
         font-size: 13px;
         margin-right: 6px;
     }
 
-    .section-card {
-        padding: 20px;
-        border-radius: 15px;
-        border: 1px solid #334155;
-        background: rgba(15, 23, 42, 0.55);
-        margin-bottom: 18px;
+
+    /* =====================================================
+       DASHBOARD HERO
+       ===================================================== */
+
+    .dashboard-hero {
+        position: relative;
+        overflow: hidden;
+        padding: 38px 40px;
+        border-radius: 24px;
+        background:
+            radial-gradient(
+                circle at 88% 18%,
+                rgba(34, 211, 238, 0.20),
+                transparent 25%
+            ),
+            radial-gradient(
+                circle at 65% 100%,
+                rgba(59, 130, 246, 0.15),
+                transparent 30%
+            ),
+            linear-gradient(
+                135deg,
+                #06111f 0%,
+                #0a1e38 50%,
+                #0c3154 100%
+            );
+        color: white;
+        margin-bottom: 28px;
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        box-shadow:
+            0 20px 55px rgba(0, 0, 0, 0.30),
+            inset 0 1px 0 rgba(255,255,255,0.05);
     }
 
-    .metric-card {
-        padding: 18px;
-        border-radius: 14px;
-        border: 1px solid #334155;
+    .dashboard-hero::after {
+        content: "";
+        position: absolute;
+        width: 220px;
+        height: 220px;
+        right: -70px;
+        top: -80px;
+        border-radius: 50%;
+        border: 1px solid rgba(56, 189, 248, 0.12);
+        box-shadow:
+            0 0 0 30px rgba(56, 189, 248, 0.025),
+            0 0 0 60px rgba(56, 189, 248, 0.018);
+    }
+
+    .dashboard-hero-title {
+        font-size: 42px;
+        font-weight: 850;
+        letter-spacing: -1px;
+        margin-bottom: 7px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .dashboard-hero-text {
+        color: #bfdbfe;
+        font-size: 16px;
+        margin-bottom: 18px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .dashboard-badge {
+        display: inline-block;
+        padding: 7px 13px;
+        border-radius: 999px;
+        background: rgba(255,255,255,0.07);
+        border: 1px solid rgba(125, 211, 252, 0.22);
+        color: #dbeafe;
+        font-size: 12px;
+        margin-right: 7px;
+        position: relative;
+        z-index: 1;
+    }
+
+
+    /* =====================================================
+       DASHBOARD CARDS
+       ===================================================== */
+
+    .dashboard-card {
+        padding: 22px;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.13);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(15, 31, 50, 0.94),
+                rgba(9, 23, 39, 0.92)
+            );
+        min-height: 125px;
+        box-shadow:
+            0 10px 28px rgba(0, 0, 0, 0.20),
+            inset 0 1px 0 rgba(255,255,255,0.025);
+        transition:
+            transform 0.18s ease,
+            border-color 0.18s ease,
+            box-shadow 0.18s ease;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(56, 189, 248, 0.28);
+        box-shadow:
+            0 15px 35px rgba(0, 0, 0, 0.28),
+            0 0 25px rgba(14, 165, 233, 0.06);
+    }
+
+    .dashboard-card-title {
+        font-size: 13px;
+        color: #94a3b8;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .dashboard-card-value {
+        font-size: 29px;
+        font-weight: 850;
+        color: #f8fafc;
+        line-height: 1.1;
+    }
+
+    .dashboard-card-subtitle {
+        font-size: 12px;
+        color: #64748b;
+        margin-top: 7px;
+        line-height: 1.4;
+    }
+
+
+    /* =====================================================
+       WORKFLOW CARDS
+       ===================================================== */
+
+    .workflow-card {
+        padding: 21px 15px;
+        border-radius: 17px;
+        border: 1px solid rgba(148, 163, 184, 0.13);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(14, 30, 49, 0.96),
+                rgba(8, 21, 36, 0.96)
+            );
+        min-height: 155px;
         text-align: center;
-        min-height: 115px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.20);
+        transition:
+            transform 0.18s ease,
+            border-color 0.18s ease;
+    }
+
+    .workflow-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(56, 189, 248, 0.30);
+    }
+
+    .workflow-number {
+        font-size: 29px;
+        margin-bottom: 9px;
+    }
+
+    .workflow-title {
+        font-weight: 750;
+        color: #f1f5f9;
+        margin-bottom: 7px;
+    }
+
+    .workflow-text {
+        font-size: 12px;
+        color: #94a3b8;
+        line-height: 1.45;
+    }
+
+
+    /* =====================================================
+       VENDOR CARDS
+       ===================================================== */
+
+    .vendor-card {
+        padding: 22px;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(16, 34, 55, 0.96),
+                rgba(8, 22, 38, 0.96)
+            );
+        text-align: center;
+        min-height: 140px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.20);
+        transition:
+            transform 0.18s ease,
+            border-color 0.18s ease,
+            box-shadow 0.18s ease;
+    }
+
+    .vendor-card:hover {
+        transform: translateY(-4px);
+        border-color: rgba(56, 189, 248, 0.35);
+        box-shadow:
+            0 14px 32px rgba(0, 0, 0, 0.28),
+            0 0 22px rgba(14, 165, 233, 0.06);
+    }
+
+    .vendor-name {
+        font-size: 19px;
+        font-weight: 750;
+        color: #f8fafc;
+        margin-top: 8px;
+    }
+
+    .vendor-type {
+        color: #7dd3fc;
+        font-size: 12px;
+        margin-top: 5px;
+    }
+
+
+    /* =====================================================
+       FRAMEWORK CARDS
+       ===================================================== */
+
+    .framework-card {
+        padding: 20px;
+        border-radius: 17px;
+        border: 1px solid rgba(148, 163, 184, 0.13);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(14, 30, 49, 0.96),
+                rgba(8, 21, 36, 0.96)
+            );
+        min-height: 112px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
+        transition:
+            transform 0.18s ease,
+            border-color 0.18s ease;
+    }
+
+    .framework-card:hover {
+        transform: translateY(-3px);
+        border-color: rgba(56, 189, 248, 0.28);
+    }
+
+    .framework-title {
+        font-weight: 750;
+        color: #f8fafc;
+        margin-bottom: 7px;
+    }
+
+    .framework-text {
+        color: #94a3b8;
+        font-size: 12px;
+        line-height: 1.45;
+    }
+
+
+    /* =====================================================
+       SECTION LABEL
+       ===================================================== */
+
+    .section-label {
+        color: #94a3b8;
+        font-size: 13px;
+        margin-top: -8px;
+        margin-bottom: 17px;
+    }
+
+
+    /* =====================================================
+       GENERAL SECTION CARD
+       ===================================================== */
+
+    .section-card {
+        padding: 22px;
+        border-radius: 18px;
+        border: 1px solid rgba(148, 163, 184, 0.13);
+        background: rgba(10, 25, 42, 0.75);
+        margin-bottom: 18px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+
+    /* =====================================================
+       METRIC CARDS
+       ===================================================== */
+
+    .metric-card {
+        padding: 19px;
+        border-radius: 16px;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        background:
+            linear-gradient(
+                145deg,
+                rgba(15, 32, 52, 0.94),
+                rgba(8, 21, 36, 0.94)
+            );
+        text-align: center;
+        min-height: 120px;
+        box-shadow: 0 8px 22px rgba(0, 0, 0, 0.18);
     }
 
     .metric-number {
         font-size: 30px;
-        font-weight: 800;
+        font-weight: 850;
+        color: #f8fafc;
     }
 
     .metric-label {
@@ -136,188 +555,249 @@ st.markdown(
         font-size: 14px;
     }
 
-    .vendor-card {
-        padding: 20px;
+
+    /* =====================================================
+       STREAMLIT METRICS
+       ===================================================== */
+
+    [data-testid="stMetric"] {
+        background:
+            linear-gradient(
+                145deg,
+                rgba(15, 32, 52, 0.95),
+                rgba(8, 21, 36, 0.95)
+            );
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        padding: 17px;
         border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        text-align: center;
-        min-height: 135px;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        box-shadow: 0 7px 22px rgba(0, 0, 0, 0.18);
     }
 
-    .vendor-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 22px rgba(15, 23, 42, 0.09);
+    [data-testid="stMetricLabel"] {
+        color: #94a3b8 !important;
     }
 
-    .vendor-name {
-        font-size: 19px;
-        font-weight: 750;
-        color: #0f172a;
-        margin-top: 8px;
+    [data-testid="stMetricValue"] {
+        color: #f8fafc !important;
+        font-weight: 800;
     }
 
-    .vendor-type {
-        color: #64748b;
-        font-size: 12px;
-        margin-top: 4px;
+    [data-testid="stMetricDelta"] {
+        font-weight: 650;
+    }
+
+
+    /* =====================================================
+       FILE UPLOADER
+       ===================================================== */
+
+    [data-testid="stFileUploader"] {
+        background:
+            linear-gradient(
+                145deg,
+                rgba(12, 29, 48, 0.95),
+                rgba(7, 20, 34, 0.95)
+            );
+        border: 1px dashed rgba(56, 189, 248, 0.32);
+        border-radius: 18px;
+        padding: 8px;
+    }
+
+    [data-testid="stFileUploader"]:hover {
+        border-color: rgba(56, 189, 248, 0.55);
+    }
+
+    [data-testid="stFileUploader"] section {
+        border: none;
+    }
+
+
+    /* =====================================================
+       BUTTONS
+       ===================================================== */
+
+    .stButton > button,
+    .stDownloadButton > button {
+        border-radius: 11px;
+        border: 1px solid rgba(56, 189, 248, 0.30);
+        background:
+            linear-gradient(
+                135deg,
+                #1261a0,
+                #087ea4
+            );
+        color: white;
+        font-weight: 700;
+        min-height: 42px;
+        transition:
+            transform 0.15s ease,
+            box-shadow 0.15s ease;
+    }
+
+    .stButton > button:hover,
+    .stDownloadButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow:
+            0 8px 22px rgba(6, 182, 212, 0.18);
+        border-color: rgba(125, 211, 252, 0.55);
+    }
+
+
+    /* =====================================================
+       INPUTS / TEXT AREAS
+       ===================================================== */
+
+    input,
+    textarea {
+        background-color: #0b1a2c !important;
+        color: #e2e8f0 !important;
+        border-color: rgba(148, 163, 184, 0.20) !important;
+    }
+
+
+    /* =====================================================
+       EXPANDERS
+       ===================================================== */
+
+    [data-testid="stExpander"] {
+        background:
+            rgba(10, 25, 42, 0.75);
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 15px;
+    }
+
+    [data-testid="stExpander"] summary {
+        color: #dbeafe;
+        font-weight: 650;
+    }
+
+
+    /* =====================================================
+       INFO / SUCCESS / WARNING / ERROR
+       ===================================================== */
+
+    [data-testid="stAlert"] {
+        border-radius: 14px;
+        border-width: 1px;
     }
 
     .status-good {
         padding: 15px;
         border-radius: 12px;
-        background: rgba(22, 163, 74, 0.15);
-        border: 1px solid #16a34a;
+        background: rgba(34, 197, 94, 0.10);
+        border: 1px solid rgba(34, 197, 94, 0.35);
     }
 
     .status-warning {
         padding: 15px;
         border-radius: 12px;
-        background: rgba(234, 179, 8, 0.12);
-        border: 1px solid #ca8a04;
+        background: rgba(234, 179, 8, 0.10);
+        border: 1px solid rgba(234, 179, 8, 0.35);
     }
 
     .status-danger {
         padding: 15px;
         border-radius: 12px;
-        background: rgba(220, 38, 38, 0.12);
-        border: 1px solid #dc2626;
+        background: rgba(239, 68, 68, 0.10);
+        border: 1px solid rgba(239, 68, 68, 0.35);
     }
 
+
+    /* =====================================================
+       AI SECURITY CARD
+       ===================================================== */
+
     .ai-card {
-        padding: 22px;
-        border-radius: 15px;
-        border: 1px solid #6366f1;
-        background: rgba(79, 70, 229, 0.08);
+        padding: 25px;
+        border-radius: 19px;
+        border: 1px solid rgba(129, 140, 248, 0.38);
+        background:
+            radial-gradient(
+                circle at 90% 10%,
+                rgba(129, 140, 248, 0.12),
+                transparent 28%
+            ),
+            linear-gradient(
+                145deg,
+                rgba(30, 27, 75, 0.78),
+                rgba(12, 24, 48, 0.90)
+            );
+        box-shadow:
+            0 12px 35px rgba(0, 0, 0, 0.22),
+            0 0 30px rgba(99, 102, 241, 0.05);
     }
+
+    .ai-card h3 {
+        color: #e0e7ff !important;
+    }
+
+
+    /* =====================================================
+       PROGRESS BAR
+       ===================================================== */
+
+    [data-testid="stProgress"] > div {
+        background-color: rgba(148, 163, 184, 0.15);
+        border-radius: 999px;
+    }
+
+    [data-testid="stProgress"] > div > div {
+        background:
+            linear-gradient(
+                90deg,
+                #2563eb,
+                #06b6d4
+            );
+        border-radius: 999px;
+    }
+
+
+    /* =====================================================
+       DATAFRAMES / TABLES
+       ===================================================== */
+
+    [data-testid="stDataFrame"] {
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 14px;
+        overflow: hidden;
+    }
+
+
+    /* =====================================================
+       CODE BLOCKS
+       ===================================================== */
+
+    [data-testid="stCode"] {
+        border-radius: 14px;
+        border: 1px solid rgba(56, 189, 248, 0.12);
+    }
+
+
+    /* =====================================================
+       DIVIDERS
+       ===================================================== */
+
+    hr {
+        border-color: rgba(148, 163, 184, 0.10);
+    }
+
+
+    /* =====================================================
+       FOOTER
+       ===================================================== */
 
     .footer {
         text-align: center;
         color: #64748b;
-        padding-top: 35px;
-        padding-bottom: 10px;
+        padding-top: 40px;
+        padding-bottom: 12px;
         font-size: 13px;
+        border-top: 1px solid rgba(148, 163, 184, 0.08);
+        margin-top: 40px;
     }
 
-    .dashboard-hero {
-        padding: 30px 34px;
-        border-radius: 20px;
-        background: linear-gradient(
-            135deg,
-            #0f172a,
-            #172554 55%,
-            #1d4ed8
-        );
-        color: white;
-        margin-bottom: 24px;
-        border: 1px solid #334155;
-        box-shadow: 0 10px 30px rgba(15, 23, 42, 0.16);
-    }
-
-    .dashboard-hero-title {
-        font-size: 38px;
-        font-weight: 800;
-        letter-spacing: -0.5px;
-        margin-bottom: 6px;
-    }
-
-    .dashboard-hero-text {
-        color: #cbd5e1;
-        font-size: 16px;
-        margin-bottom: 16px;
-    }
-
-    .dashboard-badge {
-        display: inline-block;
-        padding: 6px 12px;
-        border-radius: 999px;
-        background: rgba(255,255,255,0.12);
-        border: 1px solid rgba(255,255,255,0.20);
-        color: #e2e8f0;
-        font-size: 13px;
-        margin-right: 7px;
-    }
-
-    .dashboard-card {
-        padding: 20px;
-        border-radius: 16px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        min-height: 120px;
-        box-shadow: 0 4px 16px rgba(15, 23, 42, 0.06);
-    }
-
-    .dashboard-card-title {
-        font-size: 14px;
-        color: #64748b;
-        margin-bottom: 7px;
-    }
-
-    .dashboard-card-value {
-        font-size: 28px;
-        font-weight: 800;
-        color: #0f172a;
-    }
-
-    .dashboard-card-subtitle {
-        font-size: 12px;
-        color: #94a3b8;
-        margin-top: 4px;
-    }
-
-    .workflow-card {
-        padding: 18px 14px;
-        border-radius: 15px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        min-height: 150px;
-        text-align: center;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-    }
-
-    .workflow-number {
-        font-size: 27px;
-        margin-bottom: 8px;
-    }
-
-    .workflow-title {
-        font-weight: 750;
-        color: #0f172a;
-        margin-bottom: 5px;
-    }
-
-    .workflow-text {
-        font-size: 12px;
-        color: #64748b;
-    }
-
-    .framework-card {
-        padding: 18px;
-        border-radius: 15px;
-        border: 1px solid #e2e8f0;
-        background: white;
-        min-height: 105px;
-        box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
-    }
-
-    .framework-title {
-        font-weight: 750;
-        color: #0f172a;
-        margin-bottom: 6px;
-    }
-
-    .framework-text {
-        color: #64748b;
-        font-size: 12px;
-    }
-
-    .section-label {
-        color: #64748b;
-        font-size: 13px;
-        margin-top: -8px;
-        margin-bottom: 15px;
+    .footer b {
+        color: #7dd3fc;
     }
 
     </style>
@@ -1805,7 +2285,17 @@ with tab3:
             )
 
             st.markdown(
+                '<div class="ai-card">',
+                unsafe_allow_html=True
+            )
+
+            st.markdown(
                 st.session_state.ai_result
+            )
+
+            st.markdown(
+                "</div>",
+                unsafe_allow_html=True
             )
 
         st.write("")
