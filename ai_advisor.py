@@ -29,14 +29,13 @@ client = genai.Client(api_key=api_key) if api_key else None
 
 
 # ============================================================
-# GEMINI AI RECOMMENDATION FUNCTION
+# GEMINI AI SECURITY ANALYSIS
 # ============================================================
 
 def get_ai_recommendation(vendor, findings):
 
     # --------------------------------------------------------
-    # If API key is not available
-    # Return empty text so app.py uses fallback
+    # API KEY CHECK
     # --------------------------------------------------------
 
     if client is None:
@@ -44,37 +43,107 @@ def get_ai_recommendation(vendor, findings):
 
 
     # --------------------------------------------------------
-    # AI PROMPT
+    # CYPhora AI PROMPT
     # --------------------------------------------------------
 
     prompt = f"""
-You are CYPhora, an AI-driven network security compliance assistant.
+You are CYPhora, an AI-driven Multi-Vendor Network Security Compliance Auditor.
 
-Vendor: {vendor}
+Your job is to analyze the results of a network device security compliance audit.
 
-Failed security checks:
+Vendor:
+{vendor}
+
+Audit Findings:
 {findings}
 
-For EACH failed check, provide only:
 
-Issue:
-- One short sentence explaining the problem.
+IMPORTANT:
+The audit findings above are produced by CYPhora's security compliance engine.
 
-Risk:
-- One short sentence explaining why it matters.
+Analyze the ACTUAL findings provided.
 
-Recommendation:
-- One or two short sentences explaining how to fix it.
+Do NOT invent vulnerabilities that are not present in the findings.
+
+Do NOT give the same recommendation for every failed check.
+
+Each failed security control may represent a different security issue.
+
+Understand the check name, severity, and message before recommending remediation.
+
+Your response must be a professional security assessment suitable for a cybersecurity audit report and hackathon demonstration.
+
+
+FORMAT YOUR RESPONSE LIKE THIS:
+
+
+### 🧠 Overall Security Analysis
+
+Write 2–4 sentences summarizing the overall security posture.
+
+Mention:
+- the vendor
+- the general compliance condition
+- the most important security concern
+- whether immediate attention is required
+
+
+### 🚨 Key Security Risks
+
+Identify the most important failed controls.
+
+For each important issue use:
+
+**1. [Actual Check Name] — [Severity]**
+
+**Issue:** Explain what is actually wrong based on the audit finding.
+
+**Risk:** Explain the realistic security impact of this specific issue.
+
+**Why it matters:** Briefly explain why this control is important.
+
+
+### 🛠️ Recommended Actions
+
+Give specific and DIFFERENT remediation advice for each failed control.
+
+For example:
+
+**1. [Actual Check Name]**
+
+- Give a practical defensive remediation specific to this control.
+- Give another relevant recommendation if useful.
+
+**2. [Actual Check Name]**
+
+- Give remediation specific to this control.
+- Do NOT copy the recommendation from another control unless it genuinely applies.
+
+
+### 🎯 Priority
+
+End with:
+
+**Immediate Priority:** [most important failed control]
+
+Explain in 1–2 sentences why this should be addressed first.
+
 
 IMPORTANT RULES:
-- Be VERY concise.
-- Do not write long paragraphs.
-- Maximum 80 words per failed check.
-- Use simple professional language.
-- Do not repeat information.
-- Do not suggest attacking, accessing, or modifying real systems.
-- Give defensive security recommendations only.
-- Format the response using clear headings and bullet points.
+
+- Base everything on the supplied audit findings.
+- Do not invent vulnerabilities.
+- Do not invent configuration commands unless they are clearly supported by the finding.
+- Give defensive cybersecurity recommendations only.
+- Use vendor-aware language.
+- Do not give the same recommendation for different failed controls.
+- Avoid generic statements such as "review and remediate this issue" when a specific recommendation can be provided.
+- Explain why each issue matters.
+- Keep the response concise but useful.
+- Prefer bullet points over long paragraphs.
+- Do not mention that you are an AI model.
+- If there are only one or two failed checks, analyze those checks properly.
+- If all checks passed, provide a positive security assessment instead of remediation recommendations.
 """
 
 
@@ -112,8 +181,6 @@ IMPORTANT RULES:
 
     # --------------------------------------------------------
     # GEMINI ERROR
-    # Let app.py activate the CYPhora fallback
-    # Do NOT expose technical API errors to the user
     # --------------------------------------------------------
 
     except Exception:

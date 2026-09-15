@@ -22,6 +22,7 @@ from compliance_paloalto import check_paloalto_compliance
 from compliance_juniper import check_juniper_compliance
 from compliance_arista import check_arista_compliance
 from compliance_checkpoint import check_checkpoint_compliance
+from ai_advisor import get_ai_recommendation
 
 
 # =========================================================
@@ -1197,34 +1198,28 @@ with tab2:
         e1, e2, e3 = st.columns(3)
 
         with e1:
-
             st.write("🌐 **Cisco IOS**")
             st.caption("Router / switch configuration")
 
         with e2:
-
             st.write("🔥 **FortiGate**")
             st.caption("Firewall configuration")
 
         with e3:
-
             st.write("🛡️ **Palo Alto**")
             st.caption("PAN-OS configuration")
 
         e4, e5, e6 = st.columns(3)
 
         with e4:
-
             st.write("🔷 **Juniper Junos**")
             st.caption("Router / switch configuration")
 
         with e5:
-
             st.write("🔶 **Arista EOS**")
             st.caption("Data center switch configuration")
 
         with e6:
-
             st.write("🟦 **Check Point**")
             st.caption("Firewall / security configuration")
 
@@ -1587,12 +1582,15 @@ with tab2:
                 if failed_results:
 
                     # -------------------------------------------------
-                    # GENERATE SECURITY RECOMMENDATIONS
+                    # PREPARE FINDINGS FOR GEMINI AI
                     # -------------------------------------------------
 
-                    fallback_recommendations = []
+                    findings_text = ""
 
-                    for result in failed_results:
+                    for index, result in enumerate(
+                        failed_results,
+                        start=1
+                    ):
 
                         check_name = result.get(
                             "check",
@@ -1609,100 +1607,251 @@ with tab2:
                             "Configuration issue detected."
                         )
 
-                        if severity == "HIGH":
-
-                            recommendation = (
-                                f"**{check_name}** "
-                                f"({severity} severity): "
-                                f"Immediate review is recommended. "
-                                f"{message} "
-                                f"Remediate this control and re-run "
-                                f"the audit to verify that the security "
-                                f"risk has been reduced."
-                            )
-
-                        elif severity == "MEDIUM":
-
-                            recommendation = (
-                                f"**{check_name}** "
-                                f"({severity} severity): "
-                                f"Review and remediate this configuration "
-                                f"issue. {message} "
-                                f"Re-run the audit after applying the "
-                                f"recommended configuration change."
-                            )
-
-                        else:
-
-                            recommendation = (
-                                f"**{check_name}** "
-                                f"({severity} severity): "
-                                f"Review this configuration setting. "
-                                f"{message} "
-                                f"Apply the appropriate security hardening "
-                                f"and verify the result with another audit."
-                            )
-
-                        fallback_recommendations.append(
-                            recommendation
+                        findings_text += (
+                            f"{index}. Check: {check_name}\n"
+                            f"Severity: {severity}\n"
+                            f"Finding: {message}\n\n"
                         )
 
                     # -------------------------------------------------
-                    # BUILD AI ANALYSIS
+                    # GENERATE AI ANALYSIS
                     # -------------------------------------------------
 
-                    ai_result = (
-                        "### 🧠 CYPhora AI Recommendations\n\n"
-                        "CYPhora analyzed the detected compliance "
-                        "findings and generated security remediation "
-                        "recommendations.\n\n"
-                    )
-
-                    for index, recommendation in enumerate(
-                        fallback_recommendations,
-                        start=1
+                    with st.spinner(
+                        "🤖 CYPhora AI is analyzing the security findings..."
                     ):
 
-                        ai_result += (
-                            f"**{index}.** "
-                            f"{recommendation}\n\n"
+                        try:
+
+                            ai_result = get_ai_recommendation(
+                                vendor,
+                                findings_text
+                            )
+
+                        except Exception:
+
+                            ai_result = ""
+
+                    # -------------------------------------------------
+                    # CONTROL-SPECIFIC FALLBACK
+                    # -------------------------------------------------
+                    # Used only if Gemini is unavailable.
+                    # This is NOT presented as AI-generated content.
+
+                    if not ai_result:
+
+                        fallback_recommendations = []
+
+                        for result in failed_results:
+
+                            check_name = result.get(
+                                "check",
+                                "Security Check"
+                            )
+
+                            severity = result.get(
+                                "severity",
+                                "MEDIUM"
+                            )
+
+                            message = result.get(
+                                "message",
+                                "Configuration issue detected."
+                            )
+
+                            check_lower = check_name.lower()
+
+                            if "ssh" in check_lower:
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Insecure or unspecified SSH settings "
+                                    f"can weaken secure remote administration.\n\n"
+                                    f"**Recommendation:** Configure and enforce "
+                                    f"secure SSH settings, then re-run the compliance "
+                                    f"audit to verify the configuration."
+                                )
+
+                            elif "http" in check_lower:
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Unsecured HTTP-based administration "
+                                    f"can expose management traffic to interception.\n\n"
+                                    f"**Recommendation:** Disable unnecessary HTTP "
+                                    f"administration and use secure HTTPS-based "
+                                    f"management where supported."
+                                )
+
+                            elif "logging" in check_lower:
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Insufficient logging can make security "
+                                    f"events difficult to detect and investigate.\n\n"
+                                    f"**Recommendation:** Enable appropriate logging "
+                                    f"and verify that important security events are "
+                                    f"being recorded."
+                                )
+
+                            elif (
+                                "remote access" in check_lower
+                                or "management access" in check_lower
+                            ):
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Unrestricted management access can "
+                                    f"increase the attack surface of the device.\n\n"
+                                    f"**Recommendation:** Restrict administrative access "
+                                    f"to approved secure protocols and trusted management "
+                                    f"interfaces."
+                                )
+
+                            elif "ntp" in check_lower:
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Incorrect system time can affect "
+                                    f"logging, monitoring and incident investigation.\n\n"
+                                    f"**Recommendation:** Configure trusted NTP servers "
+                                    f"and verify that the device maintains accurate time."
+                                )
+
+                            elif "password" in check_lower:
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Weak password controls can increase "
+                                    f"the risk of unauthorized administrative access.\n\n"
+                                    f"**Recommendation:** Apply strong password policies "
+                                    f"and enforce appropriate authentication controls."
+                                )
+
+                            elif "snmp" in check_lower:
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Insecure SNMP configuration can expose "
+                                    f"management information or credentials.\n\n"
+                                    f"**Recommendation:** Use secure SNMP settings and "
+                                    f"restrict management access to authorized systems."
+                                )
+
+                            elif (
+                                "interface" in check_lower
+                                or "management" in check_lower
+                            ):
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** Poorly secured management interfaces "
+                                    f"can increase the device's exposure.\n\n"
+                                    f"**Recommendation:** Restrict management interfaces "
+                                    f"and allow administrative access only where required."
+                                )
+
+                            else:
+
+                                recommendation = (
+                                    f"**{check_name}** ({severity} severity)\n\n"
+                                    f"**Issue:** {message}\n\n"
+                                    f"**Risk:** This configuration weakness may reduce "
+                                    f"the overall security posture of the device.\n\n"
+                                    f"**Recommendation:** Review the failed control, "
+                                    f"apply the vendor-recommended security hardening, "
+                                    f"and re-run the audit."
+                                )
+
+                            fallback_recommendations.append(
+                                recommendation
+                            )
+
+                        # -------------------------------------------------
+                        # BUILD FALLBACK RESULT
+                        # -------------------------------------------------
+
+                        ai_result = (
+                            "### 🧠 CYPhora Security Recommendations\n\n"
+                            "AI analysis is temporarily unavailable, so CYPhora "
+                            "is displaying control-specific security guidance.\n\n"
                         )
 
-                    ai_result += (
-                        "---\n\n"
-                        "💡 **Overall Recommendation:** "
-                        "Remediate the failed security controls "
-                        "and run the audit again to verify improvement."
-                    )
+                        for index, recommendation in enumerate(
+                            fallback_recommendations,
+                            start=1
+                        ):
 
-                    # -------------------------------------------------
-                    # SAVE AI RESULT
-                    # -------------------------------------------------
+                            ai_result += (
+                                f"**{index}.** {recommendation}\n\n"
+                            )
 
-                    st.session_state.ai_result = ai_result
+                        ai_result += (
+                            "---\n\n"
+                            "💡 **Overall Recommendation:** "
+                            "Prioritize the HIGH-severity findings first, "
+                            "apply appropriate security hardening, and run "
+                            "the audit again to verify improvement."
+                        )
 
-                    # -------------------------------------------------
-                    # DISPLAY AI RESULT
-                    # -------------------------------------------------
+                        st.session_state.ai_result = ai_result
 
-                    st.markdown(
-                        '<div class="ai-card">',
-                        unsafe_allow_html=True
-                    )
+                        # -------------------------------------------------
+                        # DISPLAY FALLBACK
+                        # -------------------------------------------------
 
-                    st.markdown(
-                        ai_result
-                    )
+                        st.markdown(
+                            '<div class="ai-card">',
+                            unsafe_allow_html=True
+                        )
 
-                    st.markdown(
-                        "</div>",
-                        unsafe_allow_html=True
-                    )
+                        st.markdown(
+                            ai_result
+                        )
 
-                    st.success(
-                        "✅ CYPhora AI-assisted security analysis "
-                        "completed successfully."
-                    )
+                        st.markdown(
+                            "</div>",
+                            unsafe_allow_html=True
+                        )
+
+                        st.warning(
+                            "⚠️ Gemini AI analysis is currently unavailable. "
+                            "Control-specific security guidance is being shown instead."
+                        )
+
+                    else:
+
+                        # -------------------------------------------------
+                        # DISPLAY REAL GEMINI AI RESULT
+                        # -------------------------------------------------
+
+                        st.session_state.ai_result = ai_result
+
+                        st.markdown(
+                            '<div class="ai-card">',
+                            unsafe_allow_html=True
+                        )
+
+                        st.markdown(
+                            ai_result
+                        )
+
+                        st.markdown(
+                            "</div>",
+                            unsafe_allow_html=True
+                        )
+
+                        st.success(
+                            "✅ CYPhora AI security analysis completed successfully."
+                        )
 
                 else:
 
@@ -2552,7 +2701,6 @@ with tab3:
 
                 if line:
 
-                    # Remove markdown symbols for PDF readability
                     clean_line = (
                         line
                         .replace("**", "")
