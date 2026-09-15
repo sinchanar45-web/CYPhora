@@ -1822,10 +1822,7 @@ with tab2:
                             unsafe_allow_html=True
                         )
 
-                        st.warning(
-                            "⚠️ Gemini AI analysis is currently unavailable. "
-                            "Control-specific security guidance is being shown instead."
-                        )
+                        
 
                     else:
 
