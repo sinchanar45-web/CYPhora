@@ -8,7 +8,10 @@ except Exception:
     st = None
 
 
-# Get Gemini API key
+# ============================================================
+# GET GEMINI API KEY
+# ============================================================
+
 api_key = os.environ.get("GEMINI_API_KEY")
 
 if not api_key and st is not None:
@@ -18,17 +21,31 @@ if not api_key and st is not None:
         api_key = None
 
 
-# Create Gemini client only when a key is available
+# ============================================================
+# CREATE GEMINI CLIENT
+# ============================================================
+
 client = genai.Client(api_key=api_key) if api_key else None
 
 
+# ============================================================
+# GEMINI AI RECOMMENDATION FUNCTION
+# ============================================================
+
 def get_ai_recommendation(vendor, findings):
 
+    # --------------------------------------------------------
+    # If API key is not available
+    # Return empty text so app.py uses fallback
+    # --------------------------------------------------------
+
     if client is None:
-        return (
-            "AI recommendation is unavailable because the "
-            "GEMINI_API_KEY is not configured."
-        )
+        return ""
+
+
+    # --------------------------------------------------------
+    # AI PROMPT
+    # --------------------------------------------------------
 
     prompt = f"""
 You are CYPhora, an AI-driven network security compliance assistant.
@@ -60,13 +77,44 @@ IMPORTANT RULES:
 - Format the response using clear headings and bullet points.
 """
 
+
+    # --------------------------------------------------------
+    # CALL GEMINI
+    # --------------------------------------------------------
+
     try:
+
         response = client.models.generate_content(
             model="gemini-3.6-flash",
             contents=prompt
         )
 
-        return response.text
 
-    except Exception as e:
-        return f"AI recommendation could not be generated: {str(e)}"
+        # ----------------------------------------------------
+        # CHECK RESPONSE
+        # ----------------------------------------------------
+
+        if response is None:
+            return ""
+
+        response_text = getattr(response, "text", None)
+
+        if not response_text:
+            return ""
+
+        response_text = str(response_text).strip()
+
+        if not response_text:
+            return ""
+
+        return response_text
+
+
+    # --------------------------------------------------------
+    # GEMINI ERROR
+    # Let app.py activate the CYPhora fallback
+    # Do NOT expose technical API errors to the user
+    # --------------------------------------------------------
+
+    except Exception:
+        return ""
